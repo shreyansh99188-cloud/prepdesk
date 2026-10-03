@@ -376,6 +376,21 @@ body.page-ready .wrap{animation:deskArrive .8s var(--ease-smooth) both}
 @media(prefers-reduced-motion:reduce){body.page-ready .wrap{animation:none}#pointer-orb{display:none}}
 @media(hover:none),(pointer:coarse){#pointer-orb{display:none}.sound-btn{bottom:82px}}
 
+
+/* ---- Student Corner: auth + Firebase additions (scoped, existing design untouched) ---- */
+.community-auth{display:grid;gap:12px;margin:0 0 6px}.community-auth form{display:grid;gap:10px}
+.community-auth input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);color:var(--ink);font:500 14px var(--f-b);outline-offset:2px}
+.community-auth .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%}
+.community-auth .btn svg{width:18px;height:18px;flex:none}
+.auth-or{display:flex;align-items:center;gap:10px;color:var(--ink3);font-size:12px;font-weight:700}.auth-or:before,.auth-or:after{content:"";flex:1;height:1px;background:var(--line)}
+.auth-links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.auth-msg{margin:0!important;font-size:13px!important;font-weight:600;color:var(--red)!important}.auth-msg.ok{color:var(--accent)!important}
+.community-user{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:13px;color:var(--ink2)}
+.community-user b{color:var(--ink)}
+.community-verify{margin:0 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:13px;color:var(--ink2)}
+.community-verify .btn{margin-top:8px}
+.hp-field{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0}
+.comment-del{margin-left:8px;font-size:11px!important;padding:0!important}.comment-flag{margin-left:8px;font-size:11px;font-weight:700;color:var(--red)}.comment.flagged{opacity:.6}
 </style>
 </head>
 <body><canvas id="cursor-fx" aria-hidden="true"></canvas><div id="pointer-orb" aria-hidden="true"></div><div id="page-opening" aria-hidden="true"><div class="opening-core"><div class="opening-mark">P</div><div class="opening-title">PrepDesk</div><div class="opening-line"></div></div></div>
@@ -386,10 +401,25 @@ body.page-ready .wrap{animation:deskArrive .8s var(--ease-smooth) both}
   <section class="community" id="student-community" aria-labelledby="community-title">
     <div class="community-head"><h2 id="community-title">Student Corner</h2><span class="community-tag">Study together</span></div>
     <p>Share a study tip, ask a general question, or encourage fellow learners.</p>
-    <form class="community-form" id="community-form">
-      <input id="community-name" maxlength="32" placeholder="Display name (optional)" aria-label="Display name">
+    <p class="community-note" id="community-status" hidden></p>
+    <div class="community-auth" id="community-auth" hidden>
+      <button class="btn ghost" id="auth-google" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.4 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2.1 1.4-4.7 2.3-7.7 2.3-6.3 0-11.7-4.1-13.6-9.8l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/></svg>Continue with Google</button>
+      <div class="auth-or">or use email</div>
+      <form id="auth-form" novalidate>
+        <input id="auth-name" type="text" maxlength="32" autocomplete="nickname" placeholder="Display name" aria-label="Display name" hidden>
+        <input id="auth-email" type="email" autocomplete="email" placeholder="Email" aria-label="Email" required>
+        <input id="auth-pass" type="password" minlength="6" autocomplete="current-password" placeholder="Password (min 6 characters)" aria-label="Password" required>
+        <button class="btn" id="auth-submit" type="submit">Log in</button>
+        <div class="auth-links"><button class="link" id="auth-toggle" type="button">New here? Create account</button><button class="link" id="auth-reset" type="button">Forgot password?</button></div>
+      </form>
+      <p class="auth-msg" id="auth-msg" role="alert" hidden></p>
+    </div>
+    <div class="community-user" id="community-user" hidden><span>Signed in as <b id="community-who"></b></span><button class="link" id="community-signout" type="button">Sign out</button></div>
+    <div class="community-verify" id="community-verify" hidden>Please verify your email to post. We sent a link to <b id="verify-email"></b>.<br><button class="btn sm" id="verify-check" type="button">I've verified</button> <button class="link" id="verify-resend" type="button">Resend email</button></div>
+    <form class="community-form" id="community-form" hidden>
       <textarea id="community-message" maxlength="500" placeholder="Write a helpful, respectful comment…" aria-label="Comment" required></textarea>
-      <div class="community-actions"><button class="btn" type="submit">Post comment</button><span class="community-note">Demo mode: comments are saved only in this browser.</span></div>
+      <input class="hp-field" id="community-website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="community-actions"><button class="btn" type="submit" id="community-post">Post comment</button><span class="community-note" id="community-count">0/500 · No links, please. One post every 30 seconds.</span></div>
     </form>
     <div class="comment-list" id="comment-list" aria-live="polite"></div>
   </section>
@@ -895,11 +925,220 @@ render();tick();setInterval(tick,500);
       source=ctx.createBufferSource();source.buffer=buffer;source.loop=true;filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=1800;gain=ctx.createGain();gain.gain.value=.035;source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);source.start();playing=true;btn.setAttribute('aria-pressed','true');btn.textContent='♪ Ambient sound: on';
     }catch(e){stop();btn.textContent='Sound unavailable'}
   });
-  var form=document.getElementById('community-form'),list=document.getElementById('comment-list'),key='prepdesk_student_comments_v1';
-  function esc(v){return String(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-  function render(){var items=[];try{items=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}list.innerHTML=items.slice(-30).reverse().map(function(c){return '<article class="comment"><strong>'+esc(c.name||'Student')+'</strong><time>'+esc(c.date||'')+'</time><div>'+esc(c.message)+'</div></article>'}).join('')||'<p class="community-note">No comments yet. Start a positive study conversation.</p>'}
-  form.addEventListener('submit',function(e){e.preventDefault();var message=document.getElementById('community-message').value.trim();if(!message)return;var name=document.getElementById('community-name').value.trim().slice(0,32),items=[];try{items=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}items.push({name:name,message:message.slice(0,500),date:new Date().toLocaleDateString()});try{localStorage.setItem(key,JSON.stringify(items.slice(-100)))}catch(e){}document.getElementById('community-message').value='';render()});render();
 })();
+</script>
+
+<script type="module">
+/* ===== PrepDesk Student Corner · Firebase Auth + Firestore =====
+   1) Firebase Console > Project settings > Your apps > Web app > copy config below.
+   2) Publish firestore.rules (Firestore > Rules).  3) Enable Google + Email/Password in Authentication. */
+const firebaseConfig = {
+  apiKey: "AIzaSyB_N01ZDwhMCuL-TvBl6pWDuVrw_60fvmE",
+  authDomain: "prepdesk-bd58a.firebaseapp.com",
+  projectId: "prepdesk-bd58a",
+  storageBucket: "prepdesk-bd58a.firebasestorage.app",
+  messagingSenderId: "76142149771",
+  appId: "1:76142149771:web:5a830d49ab9ccc4771148e"
+};
+const APP_CHECK_SITE_KEY = ""; // optional: reCAPTCHA v3 site key for Firebase App Check (extra bot protection)
+
+const $ = id => document.getElementById(id);
+const status = $('community-status'), authBox = $('community-auth'), userBox = $('community-user'),
+      verifyBox = $('community-verify'), postForm = $('community-form'), listEl = $('comment-list');
+const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COOLDOWN_MS = 30000;
+
+function setStatus(t){ status.textContent = t; status.hidden = !t; }
+function authMsg(t, ok){ const m=$('auth-msg'); m.textContent=t||''; m.hidden=!t; m.classList.toggle('ok', !!ok); }
+function friendly(e){
+  const c = (e && e.code) || '';
+  if (c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found')) return 'Email or password is incorrect.';
+  if (c.includes('email-already-in-use')) return 'This email already has an account. Try logging in.';
+  if (c.includes('weak-password')) return 'Password must be at least 6 characters.';
+  if (c.includes('invalid-email')) return 'Please enter a valid email.';
+  if (c.includes('too-many-requests')) return 'Too many attempts. Please wait a few minutes.';
+  if (c.includes('popup-closed')||c.includes('cancelled-popup')) return '';
+  if (c.includes('network')) return 'Network problem. Check your connection.';
+  return 'Something went wrong. Please try again.';
+}
+
+if (firebaseConfig.apiKey.startsWith('YOUR_')) {
+  setStatus('Student Corner is almost ready: add your Firebase config in the page to turn on login and shared comments.');
+} else try {
+  const A = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  const AU = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+  const FS = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+
+  const app = A.initializeApp(firebaseConfig);
+  if (APP_CHECK_SITE_KEY) {
+    const AC = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js');
+    AC.initializeAppCheck(app, { provider: new AC.ReCaptchaV3Provider(APP_CHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
+  }
+  const auth = AU.getAuth(app), db = FS.getFirestore(app);
+  let mode = 'login', lastSent = '';
+
+  // ----- Shared comments (live for every visitor) -----
+  const HIDE_AT = 3;                     // comments with 3+ reports are hidden from regular users
+  let docs = [], isAdmin = false;
+  const reported = new Set(); try { (JSON.parse(localStorage.getItem('pd_reported')||'[]')).forEach(x => reported.add(x)); } catch(_){}
+  function renderList(){
+    const me = auth.currentUser && auth.currentUser.uid;
+    const html = docs.map(d => {
+      const c = d.data({serverTimestamps:'estimate'}), n = c.reportCount || 0, mine = me && c.uid === me;
+      if (n >= HIDE_AT && !isAdmin) return '';
+      const t = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleDateString() : '';
+      let acts = '';
+      if (mine || isAdmin) acts += '<button class="link comment-del" data-del="'+esc(d.id)+'" type="button">Delete</button>';
+      if (me && !mine && auth.currentUser.emailVerified) acts += reported.has(d.id)
+        ? '<span class="comment-flag">Reported</span>'
+        : '<button class="link comment-del" data-report="'+esc(d.id)+'" type="button">Report</button>';
+      const flag = isAdmin && n ? '<span class="comment-flag">'+n+' report'+(n>1?'s':'')+'</span>' : '';
+      return '<article class="comment'+(n>=HIDE_AT?' flagged':'')+'"><strong>'+esc(c.name||'Student')+'</strong><time>'+esc(t)+'</time>'+acts+flag+'<div>'+esc(c.message)+'</div></article>';
+    }).join('');
+    listEl.innerHTML = html || '<p class="community-note">No comments yet. Start a positive study conversation.</p>';
+  }
+  const q = FS.query(FS.collection(db,'comments'), FS.orderBy('createdAt','desc'), FS.limit(30));
+  FS.onSnapshot(q, snap => { docs = snap.docs; renderList(); },
+    () => { listEl.innerHTML = '<p class="community-note">Comments could not be loaded right now.</p>'; });
+
+  listEl.addEventListener('click', async e => {
+    const del = e.target.closest('[data-del]'), rep = e.target.closest('[data-report]');
+    if (del) {
+      if (!confirm('Delete this comment?')) return;
+      try { await FS.deleteDoc(FS.doc(db,'comments',del.dataset.del)); } catch(_) { setStatus('Could not delete that comment.'); }
+    } else if (rep) {
+      const u = auth.currentUser, id = rep.dataset.report; if (!u) return;
+      if (!confirm('Report this comment as inappropriate or spam?')) return;
+      try {
+        const batch = FS.writeBatch(db);
+        batch.set(FS.doc(db,'reports', id+'_'+u.uid), { commentId:id, uid:u.uid, createdAt:FS.serverTimestamp() });
+        batch.update(FS.doc(db,'comments',id), { reportCount: FS.increment(1) });
+        await batch.commit();
+        setStatus('Thanks, we will review this comment.');
+      } catch (err) { setStatus('You have already reported this comment.'); }
+      reported.add(id); try { localStorage.setItem('pd_reported', JSON.stringify([...reported].slice(-200))); } catch(_){}
+      renderList();
+    }
+  });
+
+  // ----- Auth UI state -----
+  AU.onAuthStateChanged(auth, user => {
+    setStatus('');
+    authBox.hidden = !!user; userBox.hidden = !user;
+    const verified = !!user && user.emailVerified;
+    verifyBox.hidden = !user || verified;
+    postForm.hidden = !verified;
+    if (user) {
+      $('community-who').textContent = user.displayName || user.email;
+      $('verify-email').textContent = user.email || '';
+    }
+    isAdmin = false; renderList();
+    if (user) FS.getDoc(FS.doc(db,'admins',user.uid)).then(d => { isAdmin = d.exists(); renderList(); }).catch(() => {});
+  });
+
+  function setMode(m){
+    mode = m; const signup = m === 'signup';
+    $('auth-name').hidden = !signup;
+    $('auth-name').required = signup;
+    $('auth-pass').autocomplete = signup ? 'new-password' : 'current-password';
+    $('auth-submit').textContent = signup ? 'Create account' : 'Log in';
+    $('auth-toggle').textContent = signup ? 'Already have an account? Log in' : 'New here? Create account';
+    authMsg('');
+  }
+  $('auth-toggle').onclick = () => setMode(mode === 'login' ? 'signup' : 'login');
+
+  $('auth-google').onclick = async () => {
+    authMsg('');
+    const p = new AU.GoogleAuthProvider();
+    try { await AU.signInWithPopup(auth, p); }
+    catch (e) {
+      if (e.code === 'auth/popup-blocked') { try { await AU.signInWithRedirect(auth, p); } catch(e2){ authMsg(friendly(e2)); } }
+      else authMsg(friendly(e));
+    }
+  };
+
+  $('auth-form').addEventListener('submit', async e => {
+    e.preventDefault(); authMsg('');
+    const email = $('auth-email').value.trim(), pass = $('auth-pass').value;
+    if (!email || !pass) return;
+    $('auth-submit').disabled = true;
+    try {
+      if (mode === 'signup') {
+        const name = $('auth-name').value.trim().slice(0,32);
+        if (name.length < 2) { authMsg('Please enter a display name (2+ characters).'); return; }
+        const cred = await AU.createUserWithEmailAndPassword(auth, email, pass);
+        await AU.updateProfile(cred.user, { displayName: name });
+        await AU.sendEmailVerification(cred.user);
+        $('community-who').textContent = name;
+        authMsg('Account created. Check your inbox to verify your email.', true);
+      } else {
+        await AU.signInWithEmailAndPassword(auth, email, pass);
+      }
+    } catch (err) { authMsg(friendly(err)); }
+    finally { $('auth-submit').disabled = false; }
+  });
+
+  $('auth-reset').onclick = async () => {
+    const email = $('auth-email').value.trim();
+    if (!email) { authMsg('Type your email above first.'); return; }
+    try { await AU.sendPasswordResetEmail(auth, email); authMsg('Password reset email sent (check spam too).', true); }
+    catch (e) { authMsg(friendly(e)); }
+  };
+
+  $('community-signout').onclick = () => AU.signOut(auth);
+  $('verify-resend').onclick = async () => {
+    try { await AU.sendEmailVerification(auth.currentUser); setStatus('Verification email sent.'); } catch(e){ setStatus('Please wait a bit before resending.'); }
+  };
+  $('verify-check').onclick = async () => {
+    const u = auth.currentUser; if (!u) return;
+    await u.reload(); await u.getIdToken(true);       // refresh token so rules see email_verified
+    if (u.emailVerified) { verifyBox.hidden = true; postForm.hidden = false; setStatus(''); }
+    else setStatus('Not verified yet. Open the link in your email, then tap again.');
+  };
+
+  const ta = $('community-message');
+  ta.addEventListener('input', () => { $('community-count').textContent = ta.value.length+'/500 · No links, please. One post every 30 seconds.'; });
+
+  // ----- Posting (client-side spam checks + server-enforced rules) -----
+  postForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const u = auth.currentUser; if (!u || !u.emailVerified) return;
+    if ($('community-website').value) return;                       // honeypot: bots fill hidden fields
+    const msg = ta.value.replace(/\s+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+    if (msg.length < 2) { setStatus('Write a little more before posting.'); return; }
+    if (/https?:\/\/|www\./i.test(msg)) { setStatus('Links are not allowed in comments.'); return; }
+    if (/(.)\1{9,}/.test(msg)) { setStatus('That looks like spam. Please rephrase.'); return; }
+    if (msg === lastSent) { setStatus('You already posted that.'); return; }
+    let last = 0; try { last = +localStorage.getItem('pd_last_post_'+u.uid) || 0; } catch(_){}
+    const wait = COOLDOWN_MS - (Date.now() - last);
+    if (wait > 0) { setStatus('Please wait '+Math.ceil(wait/1000)+'s before posting again.'); return; }
+
+    $('community-post').disabled = true;
+    try {
+      const batch = FS.writeBatch(db);
+      const stamp = FS.serverTimestamp();
+      batch.set(FS.doc(db,'users',u.uid), { lastPostAt: stamp });  // server-side cooldown marker
+      batch.set(FS.doc(FS.collection(db,'comments')), {
+        uid: u.uid,
+        name: (u.displayName || (u.email||'Student').split('@')[0]).slice(0,32),
+        message: msg,
+        createdAt: stamp,
+        reportCount: 0
+      });
+      await batch.commit();
+      lastSent = msg; ta.value = ''; setStatus('');
+      $('community-count').textContent = '0/500 · No links, please. One post every 30 seconds.';
+      try { localStorage.setItem('pd_last_post_'+u.uid, String(Date.now())); } catch(_){}
+    } catch (err) {
+      setStatus(err && err.code === 'permission-denied'
+        ? 'Could not post. Please wait 30 seconds between comments and make sure your email is verified.'
+        : 'Could not post right now. Please try again.');
+    } finally { $('community-post').disabled = false; }
+  });
+} catch (err) {
+  console.error(err);
+  setStatus('Student Corner could not connect right now. The rest of PrepDesk works normally.');
+}
 </script>
 </body>
 </html>
